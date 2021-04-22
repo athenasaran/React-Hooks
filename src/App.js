@@ -1,25 +1,28 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react'
+//useState useEffect é um hook
+//descartar o uso de classes
+export default function App() {
 
-function App() {
+  const [location, setLocation] = useState({})
+
+  useEffect(() => {
+    const watchId = navigator.geolocation.watchPosition(handlePositionReceived)
+
+    return () => navigator.geolocation.clearWatch(watchId)//component didunmount
+  }, []);
+
+  function handlePositionReceived({ coords }) {
+    const { latitude, longitude } = coords//desestruturaçao
+    setLocation({ latitude, longitude })
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
 
-export default App;
+    <>
+      Latitude: {location.latitude}<br />
+            Longitude: {location.longitude}
+    </>
+
+
+  )
+}
