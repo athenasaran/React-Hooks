@@ -1,56 +1,27 @@
 import React, { useState, useEffect } from 'react'
 //useState useEffect é um hook
 //descartar o uso de classes
-export default function App() {//nao tem propriedades proprias como state
-    // const [repositories, setRepositories] = useState([
-    //     { id: 1, name: 'repo-1' },
-    //     { id: 2, name: 'repo-2' },
-    //     { id: 3, name: 'repo-3' },
-    // ])//lista vazia
+export default function App() {
 
-    const [repositories, setRepositories] = useState([])
-
-
-    useEffect(async () => { //ciclo de vida do componente, pode ter varios, single responsibility principle seria bom
-        const response = await fetch('https://api.github.com/users/athenasaran/repos')
-        const data = await response.json()
-
-        setRepositories(data)
-    }, [])//quais circunstancia deve ser executada. o efeito so vai ser executado quando esse parametro mudar
-    //se vazio nunca vai ser executado novamente
-
-    // handleAddRepository = () => {//chamando varias vezes
-    //     setRepositories([
-    //         ...repositories,
-    //         { id: Math.random(), name: "Novo Repo" }
-    //     ])
-    // }
+    const [location, setLocation] = useState({})
 
     useEffect(() => {
-        const filtered = repositories.filter(repo => repo.favorite)//somente o que tem favorito
+        const watchId = navigator.geolocation.watchPosition(handlePositionReceived)
 
-        document.title = `Você tem ${filtered.length} favoritos`
-    }, [repositories])//ouvindo o estado do repositories, tendo atualização
+        return () => navigator.geolocation.clearWatch(watchId)//component didunmount
+    }, []);
 
-    function handleFavorite(id) {
-        const newRepositories = repositories.map(repo => {
-            return repo.id === id ? { ...repo, favorite: !repo.favorite } : repo
-        })
-
-        setRepositories(newRepositories)
+    function handlePositionReceived({ coords }) {
+        const { latitude, longitude } = coords//desestruturaçao
+        setLocation({ latitude, longitude })
     }
 
     return (
 
-        <ul>
-            {repositories.map(repo => (
-                <li key={repo.id}>
-                    {repo.name}
-                    {repo.favorite && <span> (Favorito)</span>}
-                    <button onClick={() => handleFavorite(repo.id)}>Favoritar</button>
-                </li>
-            ))}
-        </ul>
+        <>
+            Latitude: {location.latitude}<br />
+            Longitude: {location.longitude}
+        </>
 
 
     )
